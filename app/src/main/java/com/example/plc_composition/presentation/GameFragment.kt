@@ -5,10 +5,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import com.example.plc_composition.R
 import com.example.plc_composition.databinding.FragmentGameBinding
 import com.example.plc_composition.domain.entity.GameResult
-import com.example.plc_composition.domain.entity.GameSettings
 import com.example.plc_composition.domain.entity.Level
 import java.lang.RuntimeException
 
@@ -19,6 +19,7 @@ class GameFragment : Fragment() {
     private val viewBinding: FragmentGameBinding
         get() = _viewBinding ?: throw RuntimeException("FragmentGameBinding == null")
     private lateinit var level: Level
+    private lateinit var viewModel: GameFragmentViewModel
 
 
     companion object{
@@ -49,7 +50,9 @@ class GameFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel = ViewModelProvider(this)[GameFragmentViewModel::class.java]
         setButtonListener()
+        launchGame()
     }
 
     override fun onDestroyView() {
@@ -66,7 +69,22 @@ class GameFragment : Fragment() {
     private fun setButtonListener(){
         with(viewBinding) {
             tvOption1.setOnClickListener{
-                launchGameFinishFragment(GameResult(true, 1, 1, GameSettings(3, 3,4,5)))
+                checkAnswer(tvOption1.text.toString().toInt())
+            }
+            tvOption2.setOnClickListener{
+                checkAnswer(tvOption2.text.toString().toInt())
+            }
+            tvOption3.setOnClickListener{
+                checkAnswer(tvOption3.text.toString().toInt())
+            }
+            tvOption4.setOnClickListener{
+                checkAnswer(tvOption4.text.toString().toInt())
+            }
+            tvOption5.setOnClickListener{
+                checkAnswer(tvOption5.text.toString().toInt())
+            }
+            tvOption6.setOnClickListener{
+                checkAnswer(tvOption6.text.toString().toInt())
             }
         }
     }
@@ -78,4 +96,45 @@ class GameFragment : Fragment() {
             .commit()
     }
 
+    private fun launchGame() = with(viewBinding){
+        viewModel.timeCounter.observe(viewLifecycleOwner){
+            updateCounter(it.toString())
+        }
+        viewModel.rightAnswers.observe(viewLifecycleOwner){
+            val formatString = String.format(getString(R.string.progress_answers),
+                it.toString(),
+                viewModel.gameSettings.value?.minCountOfRightAnswers)
+            updateRightAnswers(formatString)
+        }
+        viewModel.gameResult.observe(viewLifecycleOwner){
+            endGame(it)
+        }
+        viewModel.question.observe(viewLifecycleOwner){
+            tvSum.text = it.sum.toString()
+            tvLeftNumber.text = it.visibleNumber.toString()
+            tvOption1.text = it.options[0].toString()
+            tvOption2.text = it.options[1].toString()
+            tvOption3.text = it.options[2].toString()
+            tvOption4.text = it.options[3].toString()
+            tvOption5.text = it.options[4].toString()
+            tvOption6.text = it.options[5].toString()
+        }
+        viewModel.startGame(level)
+    }
+
+    private fun checkAnswer(answer: Int){
+        viewModel.checkAnswer(answer)
+    }
+
+    private fun endGame(gameResult: GameResult){
+        launchGameFinishFragment(gameResult)
+    }
+
+    private fun updateRightAnswers(answerString: String) = with(viewBinding){
+        tvAnswersProgress.text = answerString
+    }
+
+    private fun updateCounter(counter: String) = with(viewBinding){
+        tvTimer.text = counter
+    }
 }
