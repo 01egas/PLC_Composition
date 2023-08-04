@@ -18,14 +18,6 @@ class ChooseLevelFragment : Fragment() {
     private val viewBinding: FragmentChooseLevelBinding
         get() = _viewBinding ?: throw RuntimeException("FragmentChooseLevelBinding == null")
 
-    companion object{
-        const val NAME = "ChooseLevelFragment"
-
-        fun newInstance(): ChooseLevelFragment{
-            return ChooseLevelFragment()
-        }
-    }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,10 +38,7 @@ class ChooseLevelFragment : Fragment() {
     }
 
     private fun launchGameFragment(level: Level){
-        val args = Bundle().apply {
-            putParcelable(GameFragment.KEY_LEVEL, level)
-        }
-        findNavController().navigate(R.id.action_chooseLevelFragment_to_gameFragment, args)
+        findNavController().navigate(ChooseLevelFragmentDirections.actionChooseLevelFragmentToGameFragment(level))
     }
 
     private fun setButtonListener(){
