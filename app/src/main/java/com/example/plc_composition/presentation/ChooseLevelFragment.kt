@@ -1,16 +1,13 @@
 package com.example.plc_composition.presentation
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnClickListener
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.plc_composition.R
 import com.example.plc_composition.databinding.FragmentChooseLevelBinding
 import com.example.plc_composition.domain.entity.Level
-import java.lang.RuntimeException
 
 class ChooseLevelFragment : Fragment() {
 
